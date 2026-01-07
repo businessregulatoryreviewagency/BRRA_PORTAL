@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useUserRole } from '../hooks/useUserRole'
 
 const AuthContext = createContext({})
 
@@ -8,6 +9,7 @@ export const useAuth = () => useContext(AuthContext)
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { role: userRole, loading: roleLoading } = useUserRole(user?.id)
 
   useEffect(() => {
     const getSession = async () => {
@@ -58,7 +60,8 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    loading,
+    loading: loading || roleLoading,
+    userRole,
     signUp,
     signIn,
     signOut,

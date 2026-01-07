@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const PortalLoginModal = ({ isOpen, onClose }) => {
@@ -8,6 +9,7 @@ const PortalLoginModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const { signIn, signUp, resetPassword } = useAuth()
+  const navigate = useNavigate()
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '', remember: false })
   const [registerForm, setRegisterForm] = useState({
@@ -33,6 +35,7 @@ const PortalLoginModal = ({ isOpen, onClose }) => {
     } else {
       onClose()
       setLoginForm({ email: '', password: '', remember: false })
+      navigate('/portal/dashboard')
     }
     setLoading(false)
   }
