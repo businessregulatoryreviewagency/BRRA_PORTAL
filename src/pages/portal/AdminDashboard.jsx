@@ -23,32 +23,29 @@ const AdminDashboard = () => {
     try {
       setLoading(true)
       
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers()
+      const { data, error } = await supabase.rpc('get_all_users_with_roles')
       
-      if (authError) throw authError
-
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('*')
-
-      if (rolesError && rolesError.code !== 'PGRST116') {
-        console.error('Error fetching roles:', rolesError)
+      if (error) {
+        console.error('Error fetching users:', error)
+        throw error
       }
 
-      const usersWithRoles = authUsers.users.map(user => {
-        const roleData = roles?.find(r => r.user_id === user.id)
-        return {
-          id: user.id,
-          email: user.email,
-          role: roleData?.role || 'user',
-          created_at: user.created_at,
-          metadata: user.user_metadata
+      const usersWithRoles = data.map(user => ({
+        id: user.id,
+        email: user.email,
+        role: user.role || 'user',
+        created_at: user.created_at,
+        metadata: {
+          full_name: user.full_name,
+          agency_name: user.agency_name,
+          phone: user.phone
         }
-      })
+      }))
 
       setUsers(usersWithRoles)
     } catch (error) {
       console.error('Error fetching users:', error)
+      alert('Failed to fetch users: ' + error.message)
     } finally {
       setLoading(false)
     }
@@ -60,11 +57,16 @@ const AdminDashboard = () => {
     try {
       const { error } = await supabase
         .from('user_roles')
-        .upsert({
-          user_id: selectedUser.id,
-          role: newRole,
-          updated_at: new Date().toISOString()
-        })
+        .upsert(
+          {
+            user_id: selectedUser.id,
+            role: newRole,
+            updated_at: new Date().toISOString()
+          },
+          {
+            onConflict: 'user_id'
+          }
+        )
 
       if (error) throw error
 

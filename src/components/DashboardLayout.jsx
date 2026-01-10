@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 const DashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -18,11 +19,11 @@ const DashboardLayout = ({ children }) => {
     { name: 'My Submissions', path: '/portal/submissions', icon: 'ri-file-list-3-line', roles: ['user', 'staff', 'admin'] },
     { name: 'Track Status', path: '/portal/track', icon: 'ri-search-line', roles: ['user', 'staff', 'admin'] },
     { name: 'Documents', path: '/portal/documents', icon: 'ri-folder-line', roles: ['user', 'staff', 'admin'] },
-    { name: 'Profile', path: '/portal/profile', icon: 'ri-user-line', roles: ['user', 'staff', 'admin'] },
   ]
 
   const staffNavItems = [
     { name: 'Staff Dashboard', path: '/portal/staff', icon: 'ri-briefcase-line', roles: ['staff', 'admin'] },
+    { name: 'Leave Management', path: '/portal/leave', icon: 'ri-calendar-check-line', roles: ['staff', 'admin'] },
     { name: 'Review Submissions', path: '/portal/staff/reviews', icon: 'ri-file-check-line', roles: ['staff', 'admin'] },
     { name: 'Reports', path: '/portal/staff/reports', icon: 'ri-bar-chart-line', roles: ['staff', 'admin'] },
   ]
@@ -30,6 +31,11 @@ const DashboardLayout = ({ children }) => {
   const adminNavItems = [
     { name: 'Admin Dashboard', path: '/portal/admin', icon: 'ri-admin-line', roles: ['admin'] },
     { name: 'User Management', path: '/portal/admin/users', icon: 'ri-team-line', roles: ['admin'] },
+    { name: 'Staff Management', path: '/portal/staff-management', icon: 'ri-group-line', roles: ['admin'] },
+    { name: 'Board Members', path: '/portal/board-management', icon: 'ri-vip-crown-line', roles: ['admin'] },
+    { name: 'Staff Members', path: '/portal/staff-members-management', icon: 'ri-user-star-line', roles: ['admin'] },
+    { name: 'News Management', path: '/portal/news-management', icon: 'ri-newspaper-line', roles: ['admin'] },
+    { name: 'Information Resources', path: '/portal/information-management', icon: 'ri-folder-line', roles: ['admin'] },
     { name: 'System Settings', path: '/portal/admin/settings', icon: 'ri-settings-3-line', roles: ['admin'] },
   ]
 

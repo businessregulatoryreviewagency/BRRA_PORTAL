@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useUserRole } from '../hooks/useUserRole'
 
@@ -10,21 +10,60 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const { role: userRole, loading: roleLoading } = useUserRole(user?.id)
+  const lastUserRef = useRef(null)
 
   useEffect(() => {
+    let mounted = true
+
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.warn('Session fetch error (may be rate limited):', error.message)
+          // Keep existing user if rate limited
+          if (lastUserRef.current && error.message?.includes('429')) {
+            return
+          }
+        }
+        
+        if (mounted) {
+          const currentUser = session?.user ?? null
+          setUser(currentUser)
+          lastUserRef.current = currentUser
+          setLoading(false)
+        }
+      } catch (err) {
+        console.warn('Session error:', err)
+        if (mounted) {
+          setLoading(false)
+        }
+      }
     }
 
     getSession()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Ignore token refresh errors - don't log out user
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        console.warn('Token refresh failed, keeping existing session')
+        return
+      }
+      
+      // Only update user if we have a valid session or explicit sign out
+      if (event === 'SIGNED_OUT') {
+        setUser(null)
+        lastUserRef.current = null
+      } else if (session?.user) {
+        setUser(session.user)
+        lastUserRef.current = session.user
+      }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signUp = async (email, password, metadata = {}) => {

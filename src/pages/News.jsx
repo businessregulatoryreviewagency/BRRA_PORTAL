@@ -1,105 +1,57 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 const News = () => {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
+  const [newsArticles, setNewsArticles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [expandedArticle, setExpandedArticle] = useState(null)
 
-  const categories = ['All', 'Policy Update', 'Announcement', 'Report', 'Guidelines', 'Consultation', 'Event']
+  const categories = ['All', 'general', 'announcement', 'event', 'update']
 
-  const newsArticles = [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop',
-      category: 'Policy Update',
-      date: 'December 15, 2025',
-      title: 'New RIA Guidelines Released for Public Consultation',
-      excerpt: 'BRRA has released updated guidelines for Regulatory Impact Assessment, inviting stakeholder feedback. The new guidelines aim to streamline the RIA process and improve the quality of regulatory analysis.',
-      featured: true
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop',
-      category: 'Announcement',
-      date: 'December 10, 2025',
-      title: 'BRRA Launches Regulatory Services Centre in Ndola',
-      excerpt: 'A new RSC has been established to serve businesses in the Copperbelt Province, bringing regulatory services closer to the business community.',
-      featured: true
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop',
-      category: 'Report',
-      date: 'December 5, 2025',
-      title: 'Strategic Plan 2022-2026 Implementation Progress Report',
-      excerpt: 'Review of achievements and milestones in implementing the current strategic plan, highlighting key accomplishments and areas for improvement.',
-      featured: false
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&h=400&fit=crop',
-      category: 'Guidelines',
-      date: 'November 28, 2025',
-      title: 'Updated Business Licensing Procedures Announced',
-      excerpt: 'Streamlined procedures aim to reduce processing time and improve efficiency for business license applications.',
-      featured: false
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop',
-      category: 'Consultation',
-      date: 'November 20, 2025',
-      title: 'Stakeholder Consultation on Mining Sector Regulations',
-      excerpt: 'BRRA invites stakeholders to participate in consultations regarding proposed regulatory changes in the mining sector.',
-      featured: false
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop',
-      category: 'Event',
-      date: 'November 15, 2025',
-      title: 'BRRA Hosts Annual Regulatory Excellence Conference',
-      excerpt: 'The conference brought together regulatory agencies, business leaders, and international experts to discuss best practices.',
-      featured: false
-    },
-    {
-      id: 7,
-      image: 'https://images.unsplash.com/photo-1553484771-371a605b060b?w=600&h=400&fit=crop',
-      category: 'Policy Update',
-      date: 'November 10, 2025',
-      title: 'New Framework for SME Regulatory Compliance',
-      excerpt: 'BRRA introduces a simplified compliance framework designed specifically for small and medium enterprises.',
-      featured: false
-    },
-    {
-      id: 8,
-      image: 'https://images.unsplash.com/photo-1560472355-536de3962603?w=600&h=400&fit=crop',
-      category: 'Announcement',
-      date: 'November 5, 2025',
-      title: 'e-Registry Portal Upgrade Completed',
-      excerpt: 'The upgraded portal features improved search functionality and a more user-friendly interface.',
-      featured: false
-    },
-    {
-      id: 9,
-      image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&h=400&fit=crop',
-      category: 'Report',
-      date: 'October 30, 2025',
-      title: 'Quarterly Regulatory Review Report Released',
-      excerpt: 'The report provides an overview of regulatory activities and their impact on the business environment.',
-      featured: false
+  useEffect(() => {
+    fetchNews()
+  }, [])
+
+  const fetchNews = async () => {
+    try {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false })
+
+      if (error) throw error
+      setNewsArticles(data || [])
+    } catch (error) {
+      console.error('Error fetching news:', error)
+    } finally {
+      setLoading(false)
     }
-  ]
+  }
+
 
   const filteredNews = newsArticles.filter(article => {
     const matchesCategory = selectedCategory === 'All' || article.category === selectedCategory
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         article.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+                         (article.summary && article.summary.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                         article.content.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
-  const featuredNews = filteredNews.filter(article => article.featured)
-  const regularNews = filteredNews.filter(article => !article.featured)
+  const featuredNews = filteredNews.filter(article => article.is_featured)
+  const regularNews = filteredNews.filter(article => !article.is_featured)
+
+  const handleReadMore = (article) => {
+    setExpandedArticle(article)
+  }
+
+  const closeArticle = () => {
+    setExpandedArticle(null)
+  }
 
   return (
     <div>
@@ -159,7 +111,7 @@ const News = () => {
       </section>
 
       {/* Featured News */}
-      {featuredNews.length > 0 && selectedCategory === 'All' && !searchQuery && (
+      {!loading && featuredNews.length > 0 && selectedCategory === 'All' && !searchQuery && (
         <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Stories</h2>
@@ -171,30 +123,36 @@ const News = () => {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className="aspect-video md:aspect-auto overflow-hidden">
-                      <img 
-                        src={article.image}
-                        alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                      {article.image_url ? (
+                        <img 
+                          src={article.image_url}
+                          alt={article.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+                          <i className="ri-newspaper-line text-6xl text-white opacity-50"></i>
+                        </div>
+                      )}
                     </div>
                     <div className="p-6 flex flex-col justify-center">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
+                        <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded capitalize">
                           {article.category}
                         </span>
-                        <span className="text-xs text-gray-500">{article.date}</span>
+                        <span className="text-xs text-gray-500">{new Date(article.published_at || article.created_at).toLocaleDateString()}</span>
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                         {article.title}
                       </h3>
-                      <p className="text-gray-600 text-sm line-clamp-3">{article.excerpt}</p>
-                      <Link 
-                        to={`/news/${article.id}`}
+                      <p className="text-gray-600 text-sm line-clamp-3">{article.summary || article.content.substring(0, 150) + '...'}</p>
+                      <button 
+                        onClick={() => handleReadMore(article)}
                         className="inline-flex items-center mt-4 text-blue-600 font-medium hover:text-blue-700"
                       >
                         Read More
                         <i className="ri-arrow-right-line ml-2"></i>
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -209,18 +167,29 @@ const News = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-gray-900">
-              {selectedCategory === 'All' ? 'All News' : selectedCategory}
+              {selectedCategory === 'All' ? 'All News' : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
             </h2>
-            <p className="text-gray-600">
-              {filteredNews.length} article{filteredNews.length !== 1 ? 's' : ''}
-            </p>
+            {!loading && (
+              <p className="text-gray-600">
+                {filteredNews.length} article{filteredNews.length !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
 
-          {filteredNews.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="text-gray-600 mt-4">Loading news articles...</p>
+            </div>
+          ) : filteredNews.length === 0 ? (
             <div className="text-center py-12">
               <i className="ri-newspaper-line text-6xl text-gray-300 mb-4"></i>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No articles found</h3>
-              <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
+              <p className="text-gray-600">
+                {newsArticles.length === 0 
+                  ? 'No news articles have been published yet.'
+                  : 'Try adjusting your search or filter criteria.'}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -230,30 +199,36 @@ const News = () => {
                   className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-100"
                 >
                   <div className="aspect-video overflow-hidden">
-                    <img 
-                      src={article.image}
-                      alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {article.image_url ? (
+                      <img 
+                        src={article.image_url}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+                        <i className="ri-newspaper-line text-6xl text-white opacity-50"></i>
+                      </div>
+                    )}
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
+                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded capitalize">
                         {article.category}
                       </span>
-                      <span className="text-xs text-gray-500">{article.date}</span>
+                      <span className="text-xs text-gray-500">{new Date(article.published_at || article.created_at).toLocaleDateString()}</span>
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {article.title}
                     </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
-                    <Link 
-                      to={`/news/${article.id}`}
+                    <p className="text-sm text-gray-600 line-clamp-2">{article.summary || article.content.substring(0, 100) + '...'}</p>
+                    <button 
+                      onClick={() => handleReadMore(article)}
                       className="inline-flex items-center mt-4 text-sm text-blue-600 font-medium hover:text-blue-700"
                     >
                       Read More
                       <i className="ri-arrow-right-line ml-1"></i>
-                    </Link>
+                    </button>
                   </div>
                 </article>
               ))}
@@ -295,6 +270,75 @@ const News = () => {
           </div>
         </div>
       </section>
+
+      {/* Expanded Article Modal */}
+      {expandedArticle && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold capitalize">
+                  {expandedArticle.category}
+                </span>
+                <span className="text-sm text-gray-500">
+                  <i className="ri-calendar-line mr-1"></i>
+                  {new Date(expandedArticle.published_at || expandedArticle.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <button
+                onClick={closeArticle}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <i className="ri-close-line text-2xl"></i>
+              </button>
+            </div>
+
+            <div className="p-6 lg:p-8">
+              {expandedArticle.image_url && (
+                <div className="mb-6 rounded-xl overflow-hidden">
+                  <img
+                    src={expandedArticle.image_url}
+                    alt={expandedArticle.title}
+                    className="w-full h-auto max-h-96 object-cover"
+                  />
+                </div>
+              )}
+
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                {expandedArticle.title}
+              </h1>
+
+              {expandedArticle.author_name && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
+                  <i className="ri-user-line"></i>
+                  <span>By {expandedArticle.author_name}</span>
+                </div>
+              )}
+
+              {expandedArticle.summary && (
+                <p className="text-lg text-gray-700 mb-6 font-medium leading-relaxed">
+                  {expandedArticle.summary}
+                </p>
+              )}
+
+              <div className="prose prose-lg max-w-none">
+                <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {expandedArticle.content}
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <button
+                  onClick={closeArticle}
+                  className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
