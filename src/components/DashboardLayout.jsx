@@ -36,6 +36,8 @@ const DashboardLayout = ({ children }) => {
     { name: 'Staff Members', path: '/portal/staff-members-management', icon: 'ri-user-star-line', roles: ['admin'] },
     { name: 'News Management', path: '/portal/news-management', icon: 'ri-newspaper-line', roles: ['admin'] },
     { name: 'Information Resources', path: '/portal/information-management', icon: 'ri-folder-line', roles: ['admin'] },
+    { name: 'RSC Management', path: '/portal/rsc-management', icon: 'ri-building-line', roles: ['admin'] },
+    { name: 'FAQ Management', path: '/portal/faq-management', icon: 'ri-question-answer-line', roles: ['admin'] },
     { name: 'System Settings', path: '/portal/admin/settings', icon: 'ri-settings-3-line', roles: ['admin'] },
   ]
 

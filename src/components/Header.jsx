@@ -7,6 +7,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState(null)
   const { user, signOut } = useAuth()
   const location = useLocation()
 
@@ -20,11 +21,19 @@ const Header = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
+    { 
+      name: 'About', 
+      path: '/about',
+      dropdown: [
+        { name: 'About BRRA', path: '/about' },
+        { name: 'RSCs', path: '/rsc' },
+        { name: 'Departments', path: '/departments' },
+        { name: 'Board', path: '/board' },
+        { name: 'Management', path: '/management' },
+        { name: 'FAQs', path: '/faq' },
+      ]
+    },
     { name: 'Services', path: '/services' },
-    { name: 'Departments', path: '/departments' },
-    { name: 'Board', path: '/board' },
-    { name: 'Management', path: '/management' },
     { name: 'News', path: '/news' },
     { name: 'Information', path: '/information' },
   ]
@@ -54,17 +63,54 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-1">
               {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    isActive(link.path)
-                      ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {link.name}
-                </Link>
+                link.dropdown ? (
+                  <div 
+                    key={link.name}
+                    className="relative"
+                    onMouseEnter={() => setOpenDropdown(link.name)}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <button
+                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center ${
+                        isActive(link.path) || link.dropdown.some(item => isActive(item.path))
+                          ? 'text-blue-600 bg-blue-50'
+                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {link.name}
+                      <i className="ri-arrow-down-s-line ml-1"></i>
+                    </button>
+                    {openDropdown === link.name && (
+                      <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                        {link.dropdown.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className={`block px-4 py-2 text-sm transition-colors ${
+                              isActive(item.path)
+                                ? 'text-blue-600 bg-blue-50 font-medium'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      isActive(link.path)
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                )
               ))}
             </nav>
 
@@ -106,18 +152,52 @@ const Header = () => {
           <div className="lg:hidden bg-white border-t shadow-lg">
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 text-base font-medium rounded-md ${
-                    isActive(link.path)
-                      ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {link.name}
-                </Link>
+                link.dropdown ? (
+                  <div key={link.name}>
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === link.name ? null : link.name)}
+                      className={`w-full flex items-center justify-between px-4 py-3 text-base font-medium rounded-md ${
+                        isActive(link.path) || link.dropdown.some(item => isActive(item.path))
+                          ? 'text-blue-600 bg-blue-50'
+                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {link.name}
+                      <i className={`ri-arrow-${openDropdown === link.name ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {openDropdown === link.name && (
+                      <div className="ml-4 mt-2 space-y-1">
+                        {link.dropdown.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={`block px-4 py-2 text-sm rounded-md ${
+                              isActive(item.path)
+                                ? 'text-blue-600 bg-blue-50 font-medium'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block px-4 py-3 text-base font-medium rounded-md ${
+                      isActive(link.path)
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                )
               ))}
               <div className="pt-4 border-t">
                 {user ? (

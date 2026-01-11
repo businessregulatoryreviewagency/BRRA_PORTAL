@@ -12,6 +12,8 @@ import Board from './pages/Board'
 import Management from './pages/Management'
 import News from './pages/News'
 import Information from './pages/Information'
+import RSC from './pages/RSC'
+import FAQ from './pages/FAQ'
 import UserDashboard from './pages/portal/UserDashboard'
 import StaffDashboard from './pages/portal/StaffDashboard'
 import AdminDashboard from './pages/portal/AdminDashboard'
@@ -22,6 +24,8 @@ import NewsManagement from './pages/portal/NewsManagement'
 import BoardManagement from './pages/portal/BoardManagement'
 import StaffMembersManagement from './pages/portal/StaffMembersManagement'
 import InformationManagement from './pages/portal/InformationManagement'
+import RSCManagement from './pages/portal/RSCManagement'
+import FAQManagement from './pages/portal/FAQManagement'
 import Profile from './pages/portal/Profile'
 
 function App() {
@@ -38,6 +42,8 @@ function App() {
           <Route path="/management" element={<Layout><Management /></Layout>} />
           <Route path="/news" element={<Layout><News /></Layout>} />
           <Route path="/information" element={<Layout><Information /></Layout>} />
+          <Route path="/rsc" element={<Layout><RSC /></Layout>} />
+          <Route path="/faq" element={<Layout><FAQ /></Layout>} />
           <Route path="/news/:id" element={<Layout><News /></Layout>} />
 
           {/* Protected Portal Routes */}
@@ -98,6 +104,18 @@ function App() {
           <Route path="/portal/information-management" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <DashboardLayout><InformationManagement /></DashboardLayout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/portal/rsc-management" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <DashboardLayout><RSCManagement /></DashboardLayout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/portal/faq-management" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <DashboardLayout><FAQManagement /></DashboardLayout>
             </ProtectedRoute>
           } />
           

@@ -16,7 +16,8 @@ const NewsManagement = () => {
     category: 'general',
     is_published: false,
     is_featured: false,
-    image_file: null
+    image_file: null,
+    pdf_file: null
   })
 
   useEffect(() => {
@@ -69,6 +70,34 @@ const NewsManagement = () => {
     }
   }
 
+  const handlePdfChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('PDF size must be less than 10MB')
+        return
+      }
+
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        alert('Please select a PDF file')
+        return
+      }
+
+      setFormData({ ...formData, pdf_file: file })
+    }
+  }
+
+  const convertPdfToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
   const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -92,10 +121,18 @@ const NewsManagement = () => {
         .single()
 
       let imageUrl = editingNews?.image_url || null
+      let pdfUrl = editingNews?.pdf_url || null
+      let pdfFileSize = editingNews?.pdf_file_size || null
 
       // Convert image to base64 if new image uploaded
       if (formData.image_file) {
         imageUrl = await convertImageToBase64(formData.image_file)
+      }
+
+      // Convert PDF to base64 if new PDF uploaded
+      if (formData.pdf_file) {
+        pdfUrl = await convertPdfToBase64(formData.pdf_file)
+        pdfFileSize = formData.pdf_file.size
       }
 
       const newsData = {
@@ -106,6 +143,8 @@ const NewsManagement = () => {
         is_published: formData.is_published,
         is_featured: formData.is_featured,
         image_url: imageUrl,
+        pdf_url: pdfUrl,
+        pdf_file_size: pdfFileSize,
         author_id: user.id,
         author_name: profile?.full_name || user.email,
         published_at: formData.is_published ? new Date().toISOString() : null
@@ -150,7 +189,8 @@ const NewsManagement = () => {
       category: newsItem.category,
       is_published: newsItem.is_published,
       is_featured: newsItem.is_featured,
-      image_file: null
+      image_file: null,
+      pdf_file: null
     })
     setImagePreview(newsItem.image_url)
     setShowModal(true)
@@ -182,10 +222,17 @@ const NewsManagement = () => {
       category: 'general',
       is_published: false,
       is_featured: false,
-      image_file: null
+      image_file: null,
+      pdf_file: null
     })
     setImagePreview(null)
     setEditingNews(null)
+  }
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return 'N/A'
+    const mb = bytes / (1024 * 1024)
+    return mb.toFixed(2) + ' MB'
   }
 
   if (userRole !== 'admin') {
@@ -462,10 +509,36 @@ const NewsManagement = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="general">General</option>
+                  <option value="newsletter">Newsletter</option>
                   <option value="announcement">Announcement</option>
                   <option value="event">Event</option>
-                  <option value="update">Update</option>
                 </select>
+              </div>
+
+              {/* PDF Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PDF Attachment (Optional)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Max size: 10MB. PDF files only.</p>
+                {formData.pdf_file && (
+                  <p className="text-sm text-green-600 mt-2">
+                    <i className="ri-file-pdf-line mr-1"></i>
+                    {formData.pdf_file.name} ({formatFileSize(formData.pdf_file.size)})
+                  </p>
+                )}
+                {editingNews && editingNews.pdf_url && !formData.pdf_file && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    <i className="ri-file-pdf-line mr-1"></i>
+                    Current PDF: {formatFileSize(editingNews.pdf_file_size)}
+                  </p>
+                )}
               </div>
 
               {/* Checkboxes */}

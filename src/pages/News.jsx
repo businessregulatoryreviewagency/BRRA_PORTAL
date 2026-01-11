@@ -9,7 +9,7 @@ const News = () => {
   const [loading, setLoading] = useState(true)
   const [expandedArticle, setExpandedArticle] = useState(null)
 
-  const categories = ['All', 'general', 'announcement', 'event', 'update']
+  const categories = ['All', 'general', 'newsletter', 'announcement', 'event']
 
   useEffect(() => {
     fetchNews()
@@ -51,6 +51,23 @@ const News = () => {
 
   const closeArticle = () => {
     setExpandedArticle(null)
+  }
+
+  const handleDownloadPdf = (article) => {
+    if (article.pdf_url) {
+      const link = document.createElement('a')
+      link.href = article.pdf_url
+      link.download = `${article.title}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return 'N/A'
+    const mb = bytes / (1024 * 1024)
+    return mb.toFixed(2) + ' MB'
   }
 
   return (
@@ -222,13 +239,24 @@ const News = () => {
                       {article.title}
                     </h3>
                     <p className="text-sm text-gray-600 line-clamp-2">{article.summary || article.content.substring(0, 100) + '...'}</p>
-                    <button 
-                      onClick={() => handleReadMore(article)}
-                      className="inline-flex items-center mt-4 text-sm text-blue-600 font-medium hover:text-blue-700"
-                    >
-                      Read More
-                      <i className="ri-arrow-right-line ml-1"></i>
-                    </button>
+                    <div className="flex items-center gap-3 mt-4">
+                      <button 
+                        onClick={() => handleReadMore(article)}
+                        className="inline-flex items-center text-sm text-blue-600 font-medium hover:text-blue-700"
+                      >
+                        Read More
+                        <i className="ri-arrow-right-line ml-1"></i>
+                      </button>
+                      {article.pdf_url && (
+                        <button
+                          onClick={() => handleDownloadPdf(article)}
+                          className="inline-flex items-center text-sm text-emerald-600 font-medium hover:text-emerald-700"
+                        >
+                          <i className="ri-file-pdf-line mr-1"></i>
+                          PDF
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </article>
               ))}
@@ -326,6 +354,29 @@ const News = () => {
                   {expandedArticle.content}
                 </div>
               </div>
+
+              {expandedArticle.pdf_url && (
+                <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <i className="ri-file-pdf-line text-2xl text-emerald-600"></i>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">PDF Attachment</p>
+                        <p className="text-sm text-gray-600">Size: {formatFileSize(expandedArticle.pdf_file_size)}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleDownloadPdf(expandedArticle)}
+                      className="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                    >
+                      <i className="ri-download-line"></i>
+                      Download PDF
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <button

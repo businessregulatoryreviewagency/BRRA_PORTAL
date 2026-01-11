@@ -5,99 +5,99 @@ const Departments = () => {
     {
       id: 'executive',
       icon: 'ri-user-star-line',
-      title: 'Office of the Executive Director',
+      title: 'Office Of The Executive Director',
       brief: 'Strategic leadership and coordination of Agency programmes and activities.',
-      description: 'The Office of the Director and Chief Executive Officer (CEO) provides strategic focus and direction, as well as coordinating the implementation of the programmes and activities of the Agency. In addition, it ensures that there are effective internal controls and governance structures in place.',
+      description: 'The Office of the Director and Chief Executive Officer (CEO) provides strategic focus and direction, as well as coordinating the implementation of the programmes and activities of the Agency. In addition, it ensures that there are effective linkages among and within the Departments which strengthens internal systems, and improves coordination and communication for effective performance of the Agency. Overall, the Director and CEO is responsible for executing the annual work plan as approved by the Committee in a given financial year.',
       responsibilities: [
-        'Provide strategic leadership and direction',
-        'Coordinate implementation of programmes',
-        'Ensure effective internal controls',
-        'Maintain governance structures',
-        'Represent BRRA at national and international forums'
+        'Provide strategic focus and direction',
+        'Coordinate implementation of programmes and activities',
+        'Ensure effective linkages among and within Departments',
+        'Strengthen internal systems',
+        'Execute annual work plan as approved by the Committee'
       ]
     },
     {
-      id: 'policy',
+      id: 'regulatory-affairs',
       icon: 'ri-file-text-line',
-      title: 'Policy Analysis & Research',
-      brief: 'Conducting regulatory impact assessments and policy research.',
-      description: 'This department is responsible for conducting comprehensive regulatory impact assessments, policy analysis, and research to support evidence-based decision making in regulatory matters.',
+      title: 'Regulatory Affairs Department',
+      brief: 'Ensuring policies and laws regulating business activity are sound and of high quality.',
+      description: 'The Regulatory Affairs Department is responsible for ensuring that policies and laws regulating business activity are sound, of high quality and do not unnecessarily add to the cost of doing business.',
       responsibilities: [
-        'Conduct Regulatory Impact Assessments',
-        'Analyze proposed regulations and policies',
-        'Undertake research on regulatory best practices',
-        'Provide policy recommendations',
-        'Monitor regulatory trends and developments'
+        'Review and approve proposed policies and laws regulating business activity',
+        'Review regulatory frameworks and make recommendations for appropriate interventions',
+        'Develop standards and guidelines for undertaking RIAs and public consultations',
+        'Provide technical support to Regulatory Agencies and Public Bodies in undertaking regulatory impact assessments',
+        'Monitor and evaluate the business regulatory environment in the various sectors'
       ]
     },
     {
-      id: 'stakeholder',
+      id: 'business-facilitation',
       icon: 'ri-team-line',
-      title: 'Stakeholder Engagement',
-      brief: 'Managing relationships with regulatory agencies and the business community.',
-      description: 'This department manages relationships with regulatory agencies, the business community, and other stakeholders to ensure inclusive and participatory regulatory processes.',
+      title: 'Business Facilitation And Engagement Department',
+      brief: 'Coordinating interventions to improve regulatory services delivery.',
+      description: 'This Department is responsible for coordinating the development and implementation of interventions aimed at improving regulatory services delivery in order to reduce the cost of doing business.',
       responsibilities: [
-        'Coordinate stakeholder consultations',
-        'Manage public engagement initiatives',
-        'Build partnerships with regulatory agencies',
-        'Facilitate dialogue between government and business',
-        'Organize workshops and training sessions'
-      ]
-    },
-    {
-      id: 'rsc',
-      icon: 'ri-building-2-line',
-      title: 'Regulatory Services Centres',
-      brief: 'Coordinating the establishment and operation of RSCs across Zambia.',
-      description: 'This department coordinates the establishment, rollout, and operation of Regulatory Services Centres across Zambia to improve service delivery and reduce the cost of doing business.',
-      responsibilities: [
-        'Plan and establish new RSC locations',
-        'Coordinate RSC operations',
-        'Monitor service delivery standards',
-        'Train RSC staff',
-        'Evaluate RSC performance'
+        'Maintain the e-Registry and update it on a continuous basis',
+        'Coordinate the establishment of the Single Licensing Systems for sectors and sub-sectors in order to streamline licensing procedures',
+        'Coordinate the establishment and roll out of Regulatory Services Centres (RSCs) in order to facilitate effective and efficient regulatory services delivery',
+        'Engage regulators and other key stakeholders on regulatory matters in order to facilitate development of appropriate business regulatory interventions',
+        'Coordinate development and delivery of capacity building programmes for regulatory agencies in order to enhance their service delivery'
       ]
     },
     {
       id: 'legal',
       icon: 'ri-scales-3-line',
-      title: 'Legal Services',
-      brief: 'Providing legal advice and ensuring regulatory compliance.',
-      description: 'The Legal Services department provides legal advice, ensures regulatory compliance, and supports the development of regulatory frameworks in line with the law.',
+      title: 'Legal Unit',
+      brief: 'Providing secretarial and legal services to the Committee.',
+      description: 'The Legal unit is responsible for providing secretarial and legal services to the Committee and ensuring compliance with the Business Regulatory Act No. 3 of 2014.',
       responsibilities: [
-        'Provide legal advice to the Agency',
-        'Review regulatory proposals for legal compliance',
+        'Provide secretarial services to the Committee',
+        'Provide legal services and advice',
+        'Ensure compliance with the Business Regulatory Act No. 3 of 2014',
         'Draft and review legal documents',
-        'Handle legal matters and disputes',
-        'Ensure compliance with statutory requirements'
+        'Handle legal matters and compliance issues'
+      ]
+    },
+    {
+      id: 'human-capital',
+      icon: 'ri-group-line',
+      title: 'Human Capital And Administration Unit',
+      brief: 'Managing human resources and providing logistical support services.',
+      description: 'The Human Capital and Administration Unit is responsible for the efficient and effective management and provision of logistical support services. In this regard, the role of the unit involves managing and developing the human and institutional capacity for efficient and effective delivery of services.',
+      responsibilities: [
+        'Manage and develop human resources',
+        'Provide logistical support services',
+        'Develop institutional capacity',
+        'Coordinate staff training and development',
+        'Ensure efficient and effective service delivery'
       ]
     },
     {
       id: 'finance',
       icon: 'ri-money-dollar-circle-line',
-      title: 'Finance & Administration',
-      brief: 'Managing financial resources and administrative functions.',
-      description: 'This department manages the financial resources of the Agency, ensures proper accounting practices, and oversees administrative functions to support efficient operations.',
+      title: 'Finance Unit',
+      brief: 'Managing financial resources and ensuring prudent utilization.',
+      description: 'The function of this unit involves management of financial resources. In this regard the unit is responsible for acquisition and prudent utilization of financial resources, keeping a record of financial transactions, providing input into drawing of annual budgets and work plans, preparation of financial reports and bank reconciliations.',
       responsibilities: [
-        'Manage financial resources and budgets',
-        'Ensure proper accounting and reporting',
-        'Oversee procurement processes',
-        'Manage human resources',
-        'Coordinate administrative services'
+        'Manage and acquire financial resources',
+        'Ensure prudent utilization of financial resources',
+        'Keep record of financial transactions',
+        'Provide input into drawing of annual budgets and work plans',
+        'Prepare financial reports and bank reconciliations'
       ]
     },
     {
-      id: 'ict',
-      icon: 'ri-computer-line',
-      title: 'ICT & e-Services',
-      brief: 'Developing and maintaining digital platforms and IT infrastructure.',
-      description: 'The ICT department develops and maintains digital platforms, including the e-Registry portal, and ensures robust IT infrastructure to support the Agency\'s operations.',
+      id: 'internal-audit',
+      icon: 'ri-shield-check-line',
+      title: 'Internal Audit And Risk Management Unit',
+      brief: 'Ensuring correct use of funds and compliance to financial procedures.',
+      description: 'The Internal Audit Unit is responsible for reviewing and ensuring the correct use and application of funds, conducting audits for compliance to financial procedures and processes, and developing and ensuring adherence to internal financial controls.',
       responsibilities: [
-        'Develop and maintain e-Registry portal',
-        'Manage IT infrastructure',
-        'Implement digital transformation initiatives',
-        'Ensure cybersecurity and data protection',
-        'Provide technical support'
+        'Review and ensure correct use and application of funds',
+        'Conduct audits for compliance to financial procedures and processes',
+        'Develop and ensure adherence to internal financial controls',
+        'Identify and mitigate financial risks',
+        'Provide audit reports and recommendations'
       ]
     }
   ]
@@ -136,7 +136,7 @@ const Departments = () => {
           </div>
 
           {/* Quick Navigation */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 mb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-16">
             {departments.map((dept) => (
               <a
                 key={dept.id}
